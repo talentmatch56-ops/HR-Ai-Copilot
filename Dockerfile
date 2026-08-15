@@ -1,17 +1,23 @@
-FROM python:3.11-slim
+FROM node:20-slim AS builder
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY requirements.txt .
-COPY mcp-server_requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt -r mcp-server_requirements.txt
+COPY package*.json ./
+RUN npm install --legacy-peer-deps
 
 COPY . .
+RUN npm run build
 
-EXPOSE 8000
+FROM node:20-slim AS runner
 
-CMD ["uvicorn", "main:app", "--app-dir", "app", "--host", "0.0.0.0", "--port", "8000"]
+WORKDIR /app
+
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+
+COPY --from=builder /app/node_modules ./node_modules
+
+EXPOSE 3000
+
+CMD ["npm", "run", "start"]

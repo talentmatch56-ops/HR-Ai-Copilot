@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Document Generation System</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Login Screen Overlay -->
+    <div id="login-screen" class="login-overlay">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo-icon">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <h2>HR Portal Login</h2>
+                <p>Secure Access to HR Document Merge System</p>
+            </div>
+            <form id="login-form" onsubmit="handleLogin(event)" autocomplete="off">
+                <div id="login-error" class="alert alert-danger" style="display:none; font-size:0.85rem; margin-bottom:14px; padding:10px 14px;"></div>
+                <div class="form-group" style="margin-bottom:14px;">
+                    <label style="font-weight:600; font-size:0.85rem; display:block; margin-bottom:6px;">Username</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" id="login-username" class="form-control login-input" placeholder="Enter username" value="" required autocomplete="off">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom:16px;">
+                    <label style="font-weight:600; font-size:0.85rem; display:block; margin-bottom:6px;">Password</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="login-password" class="form-control login-input" placeholder="••••••••" value="" required autocomplete="new-password">
+                        <i class="fa-solid fa-eye toggle-pass-icon" onclick="togglePasswordVisibility()" title="Show/Hide Password"></i>
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; font-size:0.85rem;">
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer; color:var(--text-muted);">
+                        <input type="checkbox" id="login-remember" checked> Remember Me
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; padding:12px; font-size:0.95rem; font-weight:600; justify-content:center;">
+                    <i class="fa-solid fa-right-to-bracket"></i> Sign In to HR Portal
+                </button>
+            </form>
+            <div class="login-footer">
+                <small><i class="fa-solid fa-shield-halved"></i> 256-bit Encrypted Local Workspace Session</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar overlay for mobile drawer -->
+        <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleMobileSidebar()"></div>
+
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-layer-group"></i>
+                <h2>HR Merge Pro</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-target="dashboard-view">
+                    <i class="fa-solid fa-chart-pie"></i> Dashboard
+                </a>
+                <a href="#" class="nav-item" data-target="employees-view">
+                    <i class="fa-solid fa-users"></i> Employees
+                </a>
+                <a href="#" class="nav-item" data-target="templates-view">
+                    <i class="fa-solid fa-file-word"></i> Templates
+                </a>
+                <a href="#" class="nav-item" data-target="mail-merge-view">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Mail Merge
+                </a>
+                <a href="#" class="nav-item" data-target="history-view">
+                    <i class="fa-solid fa-clock-rotate-left"></i> History
+                </a>
+                <a href="#" class="nav-item" data-target="settings-view">
+                    <i class="fa-solid fa-gear"></i> Settings
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button type="button" class="btn-logout-sidebar" onclick="handleLogout(event)">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="top-header">
+                <button class="mobile-toggle-btn" id="mobile-toggle-btn" onclick="toggleMobileSidebar()" aria-label="Toggle Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="header-search">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+                <div class="user-profile" onclick="toggleUserDropdown(event)" style="cursor:pointer; position:relative;">
+                    <div class="avatar">HR</div>
+                    <span>HR Admin <i class="fa-solid fa-chevron-down" style="font-size:0.75rem; margin-left:4px;"></i></span>
+                    <div class="user-dropdown" id="user-dropdown">
+                        <div class="user-dropdown-header">
+                            <strong>HR Admin</strong>
+                            <small>hr@indianic.com</small>
+                        </div>
+                        <div class="user-dropdown-divider"></div>
+                        <a href="#" onclick="handleLogout(event)"><i class="fa-solid fa-lock"></i> Lock Screen</a>
+                        <a href="#" onclick="handleLogout(event)"><i class="fa-solid fa-right-from-bracket text-danger"></i> Logout</a>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                
+                <!-- Dashboard View -->
+                <section id="dashboard-view" class="view-section active">
+                    <div class="section-header">
+                        <h1>Dashboard</h1>
+                        <p>Overview of HR Document Generation</p>
+                    </div>
+                    <div class="dashboard-cards">
+                        <div class="card stat-card">
+                            <div class="card-icon blue"><i class="fa-solid fa-users"></i></div>
+                            <div class="card-info">
+                                <h3>Total Employees</h3>
+                                <p id="stat-employees">0</p>
+                            </div>
+                        </div>
+                        <div class="card stat-card">
+                            <div class="card-icon green"><i class="fa-solid fa-file-word"></i></div>
+                            <div class="card-info">
+                                <h3>Total Templates</h3>
+                                <p id="stat-templates">0</p>
+                            </div>
+                        </div>
+                        <div class="card stat-card">
+                            <div class="card-icon purple"><i class="fa-solid fa-file-check"></i></div>
+                            <div class="card-info">
+                                <h3>Generated</h3>
+                                <p id="stat-generated">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Employees View -->
+                <section id="employees-view" class="view-section">
+                    <div class="section-header">
+                        <div>
+                            <h1>Employees Data Partitions</h1>
+                            <p>Organize datasets for Increment, Experience, Relieving, and Offer letters</p>
+                        </div>
+                        <div class="header-actions">
+                            <button class="btn btn-secondary" id="btn-export-excel"><i class="fa-solid fa-download"></i> Export Sheet</button>
+                            <button class="btn btn-primary" id="btn-import-excel"><i class="fa-solid fa-upload"></i> Import Excel</button>
+                            <button class="btn btn-primary" id="btn-add-employee"><i class="fa-solid fa-plus"></i> Add Record</button>
+                            <button class="btn btn-secondary" id="btn-add-partition"><i class="fa-solid fa-folder-plus"></i> New Partition</button>
+                            <button class="btn btn-danger" id="btn-delete-selected-emps" onclick="deleteSelectedEmployees()" style="display:none; background-color:#ef4444; color:white;"><i class="fa-solid fa-trash-can"></i> Delete Selected (<span id="selected-emp-count">0</span>)</button>
+                            <button class="btn btn-danger" id="btn-clear-all-emps" onclick="clearAllEmployeesInPartition()" style="background-color:#dc2626; color:white;"><i class="fa-solid fa-trash-arrow-up"></i> Delete All Data</button>
+                        </div>
+                    </div>
+
+                    <!-- Partition Tabs Bar -->
+                    <div class="partition-tabs-bar" id="partition-tabs-bar">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <div class="card">
+                        <div class="table-container">
+                            <table class="data-table" id="employees-table">
+                                <thead></thead>
+                                <tbody>
+                                    <!-- Rows are generated dynamically by renderEmployees() -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Templates View -->
+                <section id="templates-view" class="view-section">
+                    <div class="section-header">
+                        <h1>Templates</h1>
+                        <button class="btn btn-primary" id="btn-upload-template"><i class="fa-solid fa-upload"></i> Upload Template</button>
+                    </div>
+                    <div class="templates-grid" id="templates-container">
+                        <!-- Template cards will be generated here -->
+                    </div>
+                </section>
+
+                <!-- Mail Merge View -->
+                <section id="mail-merge-view" class="view-section">
+
+                    <!-- Wizard Header -->
+                    <div class="wiz-header">
+                        <div>
+                            <h1 class="wiz-title">Mail Merge</h1>
+                            <div class="wiz-breadcrumb" id="wiz-breadcrumb">
+                                <span class="bc-item bc-active">Employee data</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step Indicator Bar -->
+                    <div class="wiz-steps-bar">
+                        <div class="wiz-step-item">
+                            <div class="wiz-step-circle" id="wiz-sc-1">1</div>
+                            <span class="wiz-step-label">Select employees</span>
+                        </div>
+                        <div class="wiz-step-line" id="wiz-line-1"></div>
+                        <div class="wiz-step-item">
+                            <div class="wiz-step-circle" id="wiz-sc-2">2</div>
+                            <span class="wiz-step-label">Choose template</span>
+                        </div>
+                        <div class="wiz-step-line" id="wiz-line-2"></div>
+                        <div class="wiz-step-item">
+                            <div class="wiz-step-circle" id="wiz-sc-3">3</div>
+                            <span class="wiz-step-label">Map fields</span>
+                        </div>
+                        <div class="wiz-step-line" id="wiz-line-3"></div>
+                        <div class="wiz-step-item">
+                            <div class="wiz-step-circle" id="wiz-sc-4">4</div>
+                            <span class="wiz-step-label">Preview</span>
+                        </div>
+                        <div class="wiz-step-line" id="wiz-line-4"></div>
+                        <div class="wiz-step-item">
+                            <div class="wiz-step-circle" id="wiz-sc-5">5</div>
+                            <span class="wiz-step-label">Generate</span>
+                        </div>
+                    </div>
+
+                    <!-- Step Panels -->
+                    <div class="wiz-body">
+
+                        <!-- STEP 1: Select Employees -->
+                        <div class="wiz-panel active" id="wiz-panel-1">
+                            <div class="wiz-panel-head">
+                                <div>
+                                    <h2>Select Employees</h2>
+                                    <p>Choose records from your data partitions</p>
+                                </div>
+                                <label class="select-all-label">
+                                    <input type="checkbox" id="wiz-select-all"> Select All
+                                </label>
+                            </div>
+                            
+                            <!-- Mail Merge Partition Bar -->
+                            <div class="partition-tabs-bar wiz-partition-bar" id="wiz-partition-tabs-bar">
+                                <!-- Populated by JS -->
+                            </div>
+
+                            <div class="wiz-emp-grid" id="wiz-emp-list">
+                                <!-- populated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- STEP 2: Choose Template -->
+                        <div class="wiz-panel" id="wiz-panel-2">
+                            <div class="wiz-panel-head">
+                                <h2>Choose Template</h2>
+                                <p>Select the document template to merge data into</p>
+                            </div>
+                            <div class="wiz-template-grid" id="wiz-template-list">
+                                <!-- populated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- STEP 3: Map Fields -->
+                        <div class="wiz-panel" id="wiz-panel-3">
+                            <div class="map-header-row">
+                                <div>
+                                    <h3 class="map-title">Map template fields to Excel columns</h3>
+                                    <p class="map-subtitle">Sample values shown are from <strong id="map-sample-name">—</strong></p>
+                                </div>
+                                <button class="btn btn-secondary" id="btn-auto-match-fields">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Auto Match Fields
+                                </button>
+                            </div>
+                            <div class="mapping-table-wrap">
+                                <table class="mapping-table">
+                                    <thead>
+                                        <tr>
+                                            <th>TEMPLATE FIELD</th>
+                                            <th>EXCEL COLUMN</th>
+                                            <th>SAMPLE VALUE</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="mapping-tbody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- STEP 4: Preview -->
+                        <div class="wiz-panel" id="wiz-panel-4">
+                            <div class="preview-toolbar wiz-preview-bar">
+                                <span class="preview-label"><i class="fa-solid fa-eye"></i> Document Preview</span>
+                                <div class="preview-toolbar-right">
+                                    <span id="wiz-record-badge" class="record-badge" style="display:none"></span>
+                                    <button id="wiz-btn-prev" class="btn btn-secondary btn-sm" style="display:none"><i class="fa-solid fa-chevron-left"></i></button>
+                                    <button id="wiz-btn-next" class="btn btn-secondary btn-sm" style="display:none"><i class="fa-solid fa-chevron-right"></i></button>
+                                </div>
+                            </div>
+                            <div class="wiz-preview-body">
+                                <div id="wiz-preview-doc" class="preview-paper">
+                                    <div class="preview-placeholder">
+                                        <i class="fa-solid fa-file-lines"></i>
+                                        <p>Preview will appear here</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- STEP 5: Generate -->
+                        <div class="wiz-panel" id="wiz-panel-5">
+                            <div class="generate-success-panel">
+                                <i class="fa-solid fa-circle-check gen-check-icon"></i>
+                                <h2>Ready to Download</h2>
+                                <p id="gen-summary" class="gen-summary-text">Your documents have been generated.</p>
+                                <button class="btn btn-success btn-lg" id="btn-wiz-download">
+                                    <i class="fa-solid fa-download"></i> Download Documents
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Wizard Navigation Footer -->
+                    <div class="wiz-nav-footer">
+                        <button class="btn btn-secondary" id="btn-wiz-back" style="display:none">
+                            <i class="fa-solid fa-arrow-left"></i> Back
+                        </button>
+                        <button class="btn btn-primary" id="btn-wiz-next">
+                            Next <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+
+                </section>
+
+                <!-- History View -->
+                <section id="history-view" class="view-section">
+                    <div class="section-header">
+                        <div>
+                            <h1>Document History</h1>
+                            <p>Log of generated and downloaded documents</p>
+                        </div>
+                        <div class="header-actions">
+                            <button class="btn btn-secondary" onclick="clearAllHistory()"><i class="fa-solid fa-trash-can"></i> Clear History</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="table-container">
+                            <table class="data-table" id="history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date &amp; Time</th>
+                                        <th>Employee</th>
+                                        <th>Document Template</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- History rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Settings View -->
+                <section id="settings-view" class="view-section">
+                    <div class="section-header">
+                        <h1>Settings</h1>
+                    </div>
+                    <div class="card">
+                        <h3>Formatting Preferences</h3>
+                        <div class="form-group">
+                            <label>Date Format</label>
+                            <select class="form-control">
+                                <option>DD MMMM YYYY (e.g. 01 September 2026)</option>
+                                <option>DD/MM/YYYY</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Currency Format</label>
+                            <select class="form-control">
+                                <option>₹ (Indian Rupee)</option>
+                                <option>$ (US Dollar)</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- File Upload Modal -->
+    <div class="modal" id="upload-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="upload-modal-title">Upload File</h3>
+                <span class="modal-close-btn" onclick="closeAllModals()" style="cursor:pointer; font-size:1.5rem; color:var(--text-muted);">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="target-partition-group" class="form-group" style="display:none; margin-bottom:16px;">
+                    <label style="font-weight:600; font-size:0.85rem; margin-bottom:6px; display:block;">Target Data Partition:</label>
+                    <select id="upload-target-partition" class="form-control">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+                <div class="file-drop-area">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <p>Drag &amp; Drop your file here or</p>
+                    <input type="file" id="file-input" style="display:none;">
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('file-input').click()">Browse Files</button>
+                </div>
+                <div id="upload-errors" class="alert alert-danger" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Custom Partition Modal -->
+    <div class="modal" id="partition-modal">
+        <div class="modal-content" style="max-width: 440px;">
+            <div class="modal-header">
+                <h3>Create New Data Partition</h3>
+                <span class="modal-close-btn" onclick="closeAllModals()" style="cursor:pointer; font-size:1.5rem; color:var(--text-muted);">&times;</span>
+            </div>
+            <div class="modal-body" style="display:flex; flex-direction:column; gap:14px;">
+                <div class="form-group">
+                    <label style="font-weight:600; font-size:0.85rem;">Partition Name</label>
+                    <input type="text" id="new-part-name" class="form-control" placeholder="e.g. Probation Data, Appraisal Letters">
+                </div>
+                <div class="form-group">
+                    <label style="font-weight:600; font-size:0.85rem;">Icon</label>
+                    <select id="new-part-icon" class="form-control">
+                        <option value="fa-chart-line">📈 Chart / Increment</option>
+                        <option value="fa-award">📜 Certificate / Experience</option>
+                        <option value="fa-door-open">🚪 Door / Relieving</option>
+                        <option value="fa-briefcase">💼 Briefcase / Offer</option>
+                        <option value="fa-file-invoice">📄 Document</option>
+                        <option value="fa-user-check">👤 User Check</option>
+                        <option value="fa-star">⭐ Star</option>
+                    </select>
+                </div>
+                <button type="button" class="btn btn-primary" id="btn-save-partition" style="margin-top:8px;">
+                    <i class="fa-solid fa-plus"></i> Create Partition
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit / Add Employee Modal -->
+    <div class="modal" id="employee-modal">
+        <div class="modal-content" style="max-width: 540px; max-height: 85vh; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <h3 id="emp-modal-title"><i class="fa-solid fa-pen-to-square"></i> Edit Record</h3>
+                <span class="modal-close-btn" onclick="closeAllModals()" style="cursor:pointer; font-size:1.5rem; color:var(--text-muted);">&times;</span>
+            </div>
+            <div class="modal-body" style="overflow-y: auto; max-height: 60vh; padding-right: 8px;">
+                <form id="emp-edit-form" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 12px;">
+                    <div id="emp-form-fields">
+                        <!-- Populated dynamically by JS for all active partition columns -->
+                    </div>
+                </form>
+            </div>
+            <div style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px;">
+                <button type="button" class="btn btn-secondary modal-close-btn" onclick="closeAllModals()">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btn-save-employee" onclick="saveEmployeeRecord()"><i class="fa-solid fa-check"></i> Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template Preview Modal -->
+    <div class="modal" id="template-preview-modal">
+        <div class="modal-content" style="max-width: 780px; max-height: 90vh; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <h3 id="tpl-preview-modal-title"><i class="fa-regular fa-eye"></i> Template Preview</h3>
+                <span class="modal-close-btn" onclick="closeAllModals()" style="cursor:pointer; font-size:1.5rem; color:var(--text-muted);">&times;</span>
+            </div>
+            <div class="modal-body" style="overflow-y: auto; padding: 24px; background: #f8fafc;">
+                <div class="preview-paper" id="tpl-preview-doc">
+                    <!-- Preview rendered here -->
+                </div>
+            </div>
+            <div style="padding: 14px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary modal-close-btn" onclick="closeAllModals()">Close Preview</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template Fields Modal -->
+    <div class="modal" id="template-fields-modal">
+        <div class="modal-content" style="max-width: 480px;">
+            <div class="modal-header">
+                <h3 id="tpl-fields-modal-title"><i class="fa-solid fa-tags"></i> Template Placeholders</h3>
+                <span class="modal-close-btn" onclick="closeAllModals()" style="cursor:pointer; font-size:1.5rem; color:var(--text-muted);">&times;</span>
+            </div>
+            <div class="modal-body" style="display:flex; flex-direction:column; gap:12px;">
+                <p style="font-size:0.85rem; color:var(--text-muted);">Placeholders detected in this template for field mapping:</p>
+                <div id="tpl-fields-list" style="display:flex; flex-wrap:wrap; gap:8px; max-height:260px; overflow-y:auto; padding:12px; background:var(--bg-main); border:1px solid var(--border-color); border-radius:8px;">
+                    <!-- Tags populated by JS -->
+                </div>
+            </div>
+            <div style="padding: 14px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary modal-close-btn" onclick="closeAllModals()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- External Libraries -->
+    <!-- SheetJS for Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <!-- PizZip & Docxtemplater for Word templating -->
+    <script src="https://unpkg.com/pizzip@3.1.7/dist/pizzip.js"></script>
+    <script src="https://unpkg.com/docxtemplater@3.48.0/build/docxtemplater.js"></script>
+    <!-- Mammoth: DOCX → HTML for live preview -->
+    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
+    <!-- FileSaver for downloading generated files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- JSZip for zipping bulk exports -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- Localforage for easier IndexedDB -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+
+    <!-- App Logic -->
+    <script src="app.js"></script>
+</body>
+</html>
